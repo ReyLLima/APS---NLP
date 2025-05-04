@@ -11,30 +11,35 @@ def analisar_sentimento_transformers(texto, classifier):
     return sentimento, resultado[0]['score']
 
 def analisar_csv_com_transformers(caminho_csv, classifier):
+    """
+    Lê um arquivo CSV simples (uma frase por linha, sem pontuação/score) e aplica análise de sentimento.
+    """
     resultados = []
     with open(caminho_csv, mode='r', encoding='utf-8') as f:
         for linha in f:
-            linha = linha.strip()
-            # Ignora linhas vazias ou de separador
-            if not linha or '----' in linha or linha.startswith('|:'):
+            texto = linha.strip()
+            # Ignora linhas vazias
+            if not texto:
                 continue
-            # Extrai texto e score entre pipes usando regex
-            match = re.match(r'^\|\s*(.*?)\s*\|\s*([-\d]+)\s*\|$', linha)
-            if match:
-                texto = match.group(1)
-                label, score = analisar_sentimento_transformers(texto, classifier)
-                resultados.append({
-                    'texto': texto,
-                    'sentimento': label,
-                    'score': score
-                })
+            label, score = analisar_sentimento_transformers(texto, classifier)
+            resultados.append({
+                'texto': texto,
+                'sentimento': label,
+                'score': score
+            })
     return resultados
 
 if __name__ == "__main__":
-    # Carrega o modelo fine-tunado
-    model_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'modelo_finetunado_bert_pt'))
-    model = AutoModelForSequenceClassification.from_pretrained(model_path, local_files_only=True)
-    tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
+    # Pega o caminho do diretório do modelo
+    model_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modelo_finetunado_bert_pt'))
+
+    # Checa se o diretório do modelo existe
+    if not os.path.isdir(model_dir):
+        raise FileNotFoundError(f"Diretório do modelo não encontrado: {model_dir}")
+
+    # Carrega o modelo e o tokenizer
+    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
     classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
     caminho_csv = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'teste.csv'))
