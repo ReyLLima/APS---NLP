@@ -31,7 +31,7 @@ def analisar_csv_com_transformers(caminho_csv, classifier):
 
 if __name__ == "__main__":
     # Pega o caminho do diretório do modelo
-    model_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modelo_finetunado_bert_pt'))
+    model_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modelo_finetunado_bert_pt_final'))
 
     # Checa se o diretório do modelo existe
     if not os.path.isdir(model_dir):
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
-    caminho_csv = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'teste.csv'))
+    caminho_csv = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'noticias5dias.csv'))
     resultados = analisar_csv_com_transformers(caminho_csv, classifier)
     for r in resultados:
         print(f"Texto: {r['texto']}\nSentimento: {r['sentimento']} (score: {r['score']:.2f})\n")
