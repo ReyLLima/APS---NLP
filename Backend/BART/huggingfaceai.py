@@ -3,7 +3,8 @@ import os
 from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
 
 def analisar_sentimento_transformers(texto, classifier):
-    resultado = classifier(texto)
+    # Passa truncation=True e max_length=512 para evitar textos longos demais
+    resultado = classifier(texto, truncation=True, max_length=512)
     # Mapeia o índice para o rótulo de sentimento
     mapeamento_sentimentos = {0: "NEGATIVO", 1: "NEUTRO", 2: "POSITIVO"}
     label_idx = resultado[0]['label'].split('_')[1]

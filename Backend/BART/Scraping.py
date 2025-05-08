@@ -39,28 +39,28 @@ def extrair_texto_noticia(link):
     if not data:
         meta_date = soup.find('meta', {'property': 'article:published_time'})
         if meta_date and meta_date.has_attr('content'):
-            data = meta_date['content']
+            data = meta_date['content'][:-15] if len(meta_date['content']) > 15 else meta_date['content']
     if not data:
         meta_date = soup.find('meta', {'name': 'pubdate'})
         if meta_date and meta_date.has_attr('content'):
-            data = meta_date['content']
+            data = meta_date['content'][:-15] if len(meta_date['content']) > 15 else meta_date['content']
     if not data:
         meta_date = soup.find('meta', {'name': 'date'})
         if meta_date and meta_date.has_attr('content'):
-            data = meta_date['content']
+            data = meta_date['content'][:-15] if len(meta_date['content']) > 15 else meta_date['content']
     if not data:
         meta_date = soup.find('meta', {'itemprop': 'datePublished'})
         if meta_date and meta_date.has_attr('content'):
-            data = meta_date['content']
+            data = meta_date['content'][:-15] if len(meta_date['content']) > 15 else meta_date['content']
 
     return texto if texto else None, data, protocolo.upper()
 
-def salvar_noticia_csv(texto, data, protocolo, caminho_csv="Backend/salvanoticiascrap.csv"):
+def salvar_noticia_csv(texto, data, protocolo, caminho_csv=r"C:\Users\Analista Duofy\Documents\VSCODE\APS - BART\APS---NLP\Backend\BART\salvanoticiascrap.csv"):
     """
     Salva o texto, data e protocolo no CSV, separados por vírgula, cada campo entre aspas duplas.
     """
     if texto:
-        texto_final = f'"{texto}","{data if data else ''}","{protocolo if protocolo else ''}"'
+        texto_final = f'"{texto}","{data if data else ""}","{protocolo if protocolo else ""}"'
         with open(caminho_csv, 'a', encoding='utf-8') as csvfile:
             csvfile.write(texto_final + '\n')
         print("Matéria adicionada ao CSV com sucesso.")
@@ -81,4 +81,4 @@ def main():
             break
 
 if __name__ == "__main__":
-    main()
+    main() 
