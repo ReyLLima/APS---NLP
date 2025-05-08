@@ -31,7 +31,7 @@ def analisar_csv_com_transformers(caminho_csv, classifier):
 
 if __name__ == "__main__":
     # Pega o caminho do diretório do modelo
-    model_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modelo_finetunado_bert_pt_final'))
+    model_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'bart_tunado'))
 
     # Checa se o diretório do modelo existe
     if not os.path.isdir(model_dir):
@@ -42,7 +42,14 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     classifier = pipeline("text-classification", model=model, tokenizer=tokenizer)
 
-    caminho_csv = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'noticias5dias.csv'))
+    caminho_csv = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'salvanoticiascrap.csv'))
     resultados = analisar_csv_com_transformers(caminho_csv, classifier)
     for r in resultados:
         print(f"Texto: {r['texto']}\nSentimento: {r['sentimento']} (score: {r['score']:.2f})\n")
+
+    # Salva o resultado em um novo CSV, cada linha: texto original + sentimento
+    output_csv = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'outputbart.csv'))
+    with open(output_csv, mode='w', encoding='utf-8') as f_out:
+        for r in resultados:
+            f_out.write(f"{r['texto']},{r['sentimento']}\n")
+    print(f"Arquivo salvo com sentimento em: {output_csv}")
